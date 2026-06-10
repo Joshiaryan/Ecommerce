@@ -11,11 +11,14 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import importlib.util
 import os
-from dotenv import load_dotenv
 
-# Load environment variables from .env file, overriding empty env vars
-load_dotenv(override=True)
+dotenv_spec = importlib.util.find_spec("dotenv")
+if dotenv_spec is not None:
+    dotenv = importlib.util.module_from_spec(dotenv_spec)
+    dotenv_spec.loader.exec_module(dotenv)
+    dotenv.load_dotenv(override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

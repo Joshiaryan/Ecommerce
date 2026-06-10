@@ -1,5 +1,5 @@
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.response import Response  # type: ignore[import]
+from rest_framework.decorators import api_view  # type: ignore[import]
 from .models import Product, Category
 from .serializers import ProductSerializer, CategorySerializer
 
