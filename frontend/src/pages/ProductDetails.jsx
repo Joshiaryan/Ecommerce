@@ -14,7 +14,8 @@ function ProductDetails() {
     const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/api/products/${id}/`)
+        const API = import.meta.env.VITE_API_URL;
+        fetch(`${API}/api/products/${id}/`)
             .then(r => r.json())
             .then(data => { setProduct(data); setLoading(false); })
             .catch(() => setLoading(false));

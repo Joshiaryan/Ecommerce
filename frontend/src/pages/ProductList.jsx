@@ -15,9 +15,10 @@ function ProductList() {
     const [selectedCategory, setSelectedCategory] = useState("all");
 
     useEffect(() => {
+        const API = import.meta.env.VITE_API_URL;
         Promise.all([
-            fetch("http://127.0.0.1:8000/api/products/").then(r => r.json()),
-            fetch("http://127.0.0.1:8000/api/categories/").then(r => r.json()),
+            fetch(`${API}/api/products/`).then(r => r.json()),
+            fetch(`${API}/api/categories/`).then(r => r.json()),
         ])
             .then(([prods, cats]) => { setProducts(prods); setCategories(cats); setLoading(false); })
             .catch(err => { setError(err.message); setLoading(false); });

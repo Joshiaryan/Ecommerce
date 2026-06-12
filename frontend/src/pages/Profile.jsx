@@ -17,9 +17,10 @@ function Profile() {
 
     useEffect(() => {
         if (!token) { navigate("/login"); return; }
+        const API = import.meta.env.VITE_API_URL;
         Promise.all([
-            fetch("http://127.0.0.1:8000/api/profile/", { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
-            fetch("http://127.0.0.1:8000/api/orders/", { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
+            fetch(`${API}/api/profile/`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
+            fetch(`${API}/api/orders/`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
         ]).then(([userData, ordersData]) => {
             setUser(userData);
             setOrders(ordersData);
@@ -31,7 +32,7 @@ function Profile() {
     const handleSave = async (e) => {
         e.preventDefault();
         setSaving(true);
-        const res = await fetch("http://127.0.0.1:8000/api/profile/update/", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/profile/update/`, {
             method: "PUT",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             body: JSON.stringify(form),

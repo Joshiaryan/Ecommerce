@@ -18,6 +18,7 @@ staticfiles/
 frontend/node_modules/
 frontend/dist/
 frontend/.local
+frontend/.env
 
 # Logs
 *.log
