@@ -19,8 +19,8 @@ function Profile() {
         if (!token) { navigate("/login"); return; }
         const API = import.meta.env.VITE_API_URL;
         Promise.all([
-            fetch(`${API}/api/profile/`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
-            fetch(`${API}/api/orders/`, { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
+            fetch(`${API}/api/profile/`, { headers: { Authorization: `Bearer ${token}` } }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+            fetch(`${API}/api/orders/`, { headers: { Authorization: `Bearer ${token}` } }).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
         ]).then(([userData, ordersData]) => {
             setUser(userData);
             setOrders(ordersData);

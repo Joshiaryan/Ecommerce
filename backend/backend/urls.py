@@ -19,6 +19,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.http import JsonResponse
+
+def handler404(request, exception):
+    return JsonResponse({'error': 'Not found'}, status=404)
+
+def handler500(request):
+    return JsonResponse({'error': 'Server error'}, status=500)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
