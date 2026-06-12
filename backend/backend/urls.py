@@ -21,11 +21,22 @@ from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.http import JsonResponse
 
-def handler404(request, exception):
+def handler404(request, exception=None):
     return JsonResponse({'error': 'Not found'}, status=404)
 
 def handler500(request):
-    return JsonResponse({'error': 'Server error'}, status=500)
+    return JsonResponse({'error': 'Internal server error'}, status=500)
+
+def handler400(request, exception=None):
+    return JsonResponse({'error': 'Bad request'}, status=400)
+
+def handler403(request, exception=None):
+    return JsonResponse({'error': 'Forbidden'}, status=403)
+
+handler404 = handler404
+handler500 = handler500
+handler400 = handler400
+handler403 = handler403
 
 urlpatterns = [
     path('admin/', admin.site.urls),
