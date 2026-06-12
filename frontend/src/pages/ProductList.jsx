@@ -17,8 +17,8 @@ function ProductList() {
     useEffect(() => {
         const API = import.meta.env.VITE_API_URL;
         Promise.all([
-            fetch(`${API}/api/products/`).then(r => r.json()),
-            fetch(`${API}/api/categories/`).then(r => r.json()),
+            fetch(`${API}/api/products/`).then(r => { if (!r.ok) throw new Error(`Products API error: ${r.status}`); return r.json(); }),
+            fetch(`${API}/api/categories/`).then(r => { if (!r.ok) throw new Error(`Categories API error: ${r.status}`); return r.json(); }),
         ])
             .then(([prods, cats]) => { setProducts(prods); setCategories(cats); setLoading(false); })
             .catch(err => { setError(err.message); setLoading(false); });
