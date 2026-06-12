@@ -2,15 +2,15 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegisterSerializer, UserSerializer, UserProfileSerializer
 from rest_framework import status
-from .models import Product, Category, Cart, CartItem, Order, OrderItem
+from .models import Product, Category, Cart, CartItem, Order, OrderItem, UserProfile
 from .serializers import ProductSerializer, CategorySerializer, CartSerializer, CartItemSerializer
 
 @api_view(['GET'])
 def get_products(request):
     products = Product.objects.all()
-    serializer = ProductSerializer(products, many=True)
+    serializer = ProductSerializer(products, many=True, context={'request': request})
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -132,3 +132,47 @@ def register_view(request):
         user = serializer.save()
         return Response({"message": "User created successfully", "user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profile(request):
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    # Update user fields
+    user = request.user
+    user.email = request.data.get('email', user.email)
+    user.save()
+    # Update profile fields
+    serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(UserSerializer(user).data)
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_my_orders(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    data = []
+    for order in orders:
+        items = [{
+            'product': item.product.name,
+            'quantity': item.quantity,
+            'price': str(item.price),
+        } for item in order.items.all()]
+        data.append({
+            'id': order.id,
+            'total_amount': str(order.total_amount),
+            'created_at': order.created_at,
+            'payment_method': order.payment_method,
+            'items': items,
+        })
+    return Response(data)
