@@ -62,10 +62,10 @@ def update_cart_quantity(request):
         return Response({'error': 'Item ID and quantity are required'}, status=400)
     
     try:
-        item = CartItem.objects.get(id=item_id)
+        item = CartItem.objects.get(id=item_id, cart__user=request.user)
         if int(quantity) < 1:
             item.delete()
-            return Response({'error': 'Quantity must be at least 1'}, status=400)
+            return Response({'message': 'Item removed from cart'})
         
         item.quantity = quantity
         item.save()
@@ -78,7 +78,9 @@ def update_cart_quantity(request):
 @permission_classes([IsAuthenticated])
 def remove_from_cart(request):
     item_id = request.data.get('item_id')
-    CartItem.objects.filter(id=item_id).delete()
+    if not item_id:
+        return Response({'error': 'item_id is required'}, status=400)
+    CartItem.objects.filter(id=item_id, cart__user=request.user).delete()
     return Response({'message': 'Item removed from cart'})
 
 @api_view(['POST'])
